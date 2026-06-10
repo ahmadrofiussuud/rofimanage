@@ -190,13 +190,17 @@ export default function DashboardPage() {
         body: JSON.stringify({ tasks: tasksWithCategoryNames }),
       });
 
-      if (!res.ok) throw new Error("Recommendation failed");
-
       const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Gagal mendapatkan rekomendasi AI.");
+      }
+
       setAiRecommendation(data.recommendation);
     } catch (err) {
       console.error("Failed to get recommendation:", err);
-      setAiRecommendation("Gagal mendapatkan rekomendasi AI. Pastikan server route tersedia dan coba lagi.");
+      const errorMessage = err instanceof Error ? err.message : "Gagal mendapatkan rekomendasi AI. Pastikan server route tersedia dan coba lagi.";
+      setAiRecommendation(errorMessage);
     } finally {
       setAiLoading(false);
     }

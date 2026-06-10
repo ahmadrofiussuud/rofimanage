@@ -63,7 +63,7 @@ Berdasarkan prioritas akademis dan tenggat waktu kamu, kamu sebaiknya fokus pada
     }
 
     // Call real Gemini API
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -84,7 +84,28 @@ Berdasarkan prioritas akademis dan tenggat waktu kamu, kamu sebaiknya fokus pada
 
     if (!response.ok) {
       const errText = await response.text();
-      throw new Error(`Gemini API returned status ${response.status}: ${errText}`);
+      let friendlyMessage = "Gagal memproses rekomendasi AI.";
+      
+      try {
+        const errJson = JSON.parse(errText);
+        const errMsg = errJson.error?.message || "";
+        if (response.status === 429 && (errMsg.includes("prepayment credits") || errMsg.includes("depleted"))) {
+          friendlyMessage = "Saldo / kredit API Gemini Anda habis. Silakan isi saldo di Google AI Studio untuk melanjutkan.";
+        } else if (response.status === 401 || response.status === 403) {
+          friendlyMessage = "API Key Gemini tidak valid atau tidak memiliki izin akses. Silakan cek kembali file .env.local.";
+        } else if (errMsg) {
+          friendlyMessage = `Gemini API Error: ${errMsg}`;
+        }
+      } catch {
+        if (errText.includes("prepayment credits") || errText.includes("depleted")) {
+          friendlyMessage = "Saldo / kredit API Gemini Anda habis. Silakan isi saldo di Google AI Studio untuk melanjutkan.";
+        }
+      }
+
+      return NextResponse.json(
+        { error: friendlyMessage },
+        { status: response.status }
+      );
     }
 
     const data = await response.json();
@@ -93,9 +114,11 @@ Berdasarkan prioritas akademis dan tenggat waktu kamu, kamu sebaiknya fokus pada
     return NextResponse.json({ recommendation: recommendationText });
   } catch (error) {
     console.error("Gemini route handler error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Gagal memproses rekomendasi AI.";
     return NextResponse.json(
-      { error: "Gagal memproses rekomendasi AI." },
+      { error: errorMessage },
       { status: 500 }
     );
   }
 }
+

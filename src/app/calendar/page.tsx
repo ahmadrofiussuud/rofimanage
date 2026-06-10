@@ -26,7 +26,7 @@ import {
   DialogFooter
 } from "@/components/ui/dialog";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { DUMMY_TASKS } from "@/lib/constants";
+import { DUMMY_TASKS, DUMMY_ACTIVITIES, Activity } from "@/lib/constants";
 
 interface Category {
   id: string;
@@ -59,6 +59,7 @@ const DEFAULT_CATEGORIES: Category[] = [
 export default function CalendarPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   
@@ -68,9 +69,10 @@ export default function CalendarPage() {
   
   // Detail Dialog states
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
-  // Fetch categories & tasks
+  // Fetch categories, tasks & activities
   async function loadData() {
     if (!isSupabaseConfigured) {
       setIsOfflineMode(true);
@@ -83,13 +85,15 @@ export default function CalendarPage() {
       setLoading(true);
       const { data: catData, error: catError } = await supabase.from("categories").select("*");
       const { data: taskData, error: taskError } = await supabase.from("tasks").select("*");
+      const { data: actData, error: actError } = await supabase.from("activities").select("*");
 
-      if (catError || taskError || !catData || catData.length === 0) {
+      if (catError || taskError || actError || !catData || catData.length === 0) {
         throw new Error("Supabase connection offline or unconfigured.");
       }
 
       setCategories(catData);
       setTasks(taskData || []);
+      setActivities(actData || []);
       setIsOfflineMode(false);
     } catch {
       setIsOfflineMode(true);
@@ -102,6 +106,7 @@ export default function CalendarPage() {
   const loadLocalData = () => {
     let localCats = localStorage.getItem("student_os_categories");
     let localTasks = localStorage.getItem("student_os_tasks");
+    let localActs = localStorage.getItem("student_os_activities");
 
     if (!localCats) {
       localStorage.setItem("student_os_categories", JSON.stringify(DEFAULT_CATEGORIES));
@@ -111,8 +116,13 @@ export default function CalendarPage() {
       localStorage.setItem("student_os_tasks", JSON.stringify(DUMMY_TASKS));
       localTasks = JSON.stringify(DUMMY_TASKS);
     }
+    if (!localActs) {
+      localStorage.setItem("student_os_activities", JSON.stringify(DUMMY_ACTIVITIES));
+      localActs = JSON.stringify(DUMMY_ACTIVITIES);
+    }
     setCategories(JSON.parse(localCats));
     setTasks(JSON.parse(localTasks));
+    setActivities(JSON.parse(localActs));
   };
 
   useEffect(() => {
@@ -242,9 +252,22 @@ export default function CalendarPage() {
     return tasks.filter((t) => t.deadline === dateStr);
   };
 
+  // Fetch activities matching specific date string (YYYY-MM-DD)
+  const getActivitiesForDate = (dateStr: string) => {
+    return activities.filter((a) => a.date === dateStr);
+  };
+
   const openTaskDetail = (task: Task, e: React.MouseEvent) => {
     e.stopPropagation();
+    setSelectedActivity(null);
     setSelectedTask(task);
+    setIsDetailOpen(true);
+  };
+
+  const openActivityDetail = (act: Activity, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedTask(null);
+    setSelectedActivity(act);
     setIsDetailOpen(true);
   };
 
@@ -277,14 +300,64 @@ export default function CalendarPage() {
 
   const cells = viewMode === "month" ? getMonthData() : getWeekData();
 
-  // Active tasks sorted by deadline for mobile Agenda list fallback
-  const agendaTasks = [...tasks]
-    .filter(t => t.status !== "done")
-    .sort((a, b) => {
-      if (!a.deadline) return 1;
-      if (!b.deadline) return -1;
-      return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
-    });
+  // Combine activities and active tasks for a unified agenda
+  const getUnifiedAgenda = () => {
+    const activeTasks = tasks
+      .filter(t => t.status !== "done" && t.deadline)
+      .map(t => ({
+        id: t.id,
+        type: "task" as const,
+        title: t.title,
+        date: t.deadline!,
+        timeLabel: "Due",
+        priority: t.priority,
+        category_id: t.category_id,
+        notes: t.notes,
+        raw: t
+      }));
+
+    const upcomingActivities = activities
+      .map(a => ({
+        id: a.id,
+        type: "activity" as const,
+        title: a.title,
+        date: a.date,
+        timeLabel: `${a.start_time.substring(0, 5)}${a.end_time ? ` - ${a.end_time.substring(0, 5)}` : ""}`,
+        priority: "low" as const,
+        category_id: a.category_id,
+        notes: a.notes,
+        raw: a
+      }));
+
+    return [...activeTasks, ...upcomingActivities]
+      .sort((a, b) => {
+        const dateDiff = new Date(a.date).getTime() - new Date(b.date).getTime();
+        if (dateDiff !== 0) return dateDiff;
+        
+        if (a.type !== b.type) {
+          return a.type === "activity" ? -1 : 1;
+        }
+        
+        if (a.type === "activity" && b.type === "activity") {
+          return (a.raw as Activity).start_time.localeCompare((b.raw as Activity).start_time);
+        }
+        
+        return 0;
+      });
+  };
+
+  const unifiedAgenda = getUnifiedAgenda();
+
+  const handleItemClick = (item: { type: "task" | "activity"; raw: Task | Activity }) => {
+    if (item.type === "task") {
+      setSelectedActivity(null);
+      setSelectedTask(item.raw as Task);
+    } else {
+      setSelectedTask(null);
+      setSelectedActivity(item.raw as Activity);
+    }
+    setIsDetailOpen(true);
+  };
 
   const openGlobalAddTask = () => {
     const event = new KeyboardEvent("keydown", { key: "n" });
@@ -409,6 +482,31 @@ export default function CalendarPage() {
                       </div>
 
                       <div className="space-y-1 flex-1 flex flex-col justify-start overflow-y-auto max-h-[80px] scrollbar-thin">
+                        {/* Activities */}
+                        {getActivitiesForDate(cell.dateString).map((act) => {
+                          const category = categories.find(c => c.id === act.category_id);
+                          const badgeColor = category ? category.color : "#10B981";
+
+                          return (
+                            <div 
+                              key={act.id} 
+                              onClick={(e) => openActivityDetail(act, e)}
+                              className="text-[10px] px-1.5 py-0.5 border rounded font-semibold cursor-pointer select-none transition-all hover:opacity-85 truncate"
+                              style={{
+                                backgroundColor: `${badgeColor}12`,
+                                borderColor: `${badgeColor}35`,
+                                color: badgeColor
+                              }}
+                            >
+                              <span className="font-bold mr-1">
+                                🕒 {act.start_time.substring(0, 5)}
+                              </span>
+                              {act.title}
+                            </div>
+                          );
+                        })}
+
+                        {/* Tasks */}
                         {dayTasks.map((task) => {
                           const category = categories.find(c => c.id === task.category_id);
                           const badgeColor = category ? category.color : "#94A3B8";
@@ -448,20 +546,20 @@ export default function CalendarPage() {
                 </h3>
                 
                 <div className="space-y-2.5 max-h-[400px] overflow-y-auto pr-1">
-                  {agendaTasks.slice(0, 4).map((task) => (
+                  {unifiedAgenda.slice(0, 6).map((item) => (
                     <div 
-                      key={task.id} 
-                      onClick={(e) => openTaskDetail(task, e)}
+                      key={item.id} 
+                      onClick={() => handleItemClick(item)}
                       className="p-3 rounded-lg border border-border bg-card/30 hover:bg-card/75 transition-colors cursor-pointer space-y-1 text-xs"
                     >
-                      <p className="font-bold text-foreground leading-snug">{task.title}</p>
+                      <p className="font-bold text-foreground leading-snug">{item.title}</p>
                       <p className="text-[10px] text-muted-foreground flex items-center gap-1">
-                        <Clock className="h-3 w-3" /> Due {task.deadline ? new Date(task.deadline).toLocaleDateString() : "No date"}
+                        {item.type === "activity" ? "🕒" : "📅"} {item.timeLabel} ({new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })})
                       </p>
                     </div>
                   ))}
-                  {agendaTasks.length === 0 && (
-                    <p className="text-xs text-muted-foreground text-center py-4">No active tasks scheduled.</p>
+                  {unifiedAgenda.length === 0 && (
+                    <p className="text-xs text-muted-foreground text-center py-4">No active schedule items.</p>
                   )}
                 </div>
               </div>
@@ -477,22 +575,22 @@ export default function CalendarPage() {
 
             <div className="rounded-lg border border-border bg-white p-4 space-y-4">
               <h3 className="font-bold text-sm text-foreground flex items-center gap-2 border-b border-border pb-2">
-                <CalendarIcon className="h-4 w-4 text-primary" /> Agenda Tugas Aktif
+                <CalendarIcon className="h-4 w-4 text-primary" /> Agenda & Jadwal Kegiatan
               </h3>
 
               <div className="space-y-3">
-                {agendaTasks.map((task) => {
-                  const category = categories.find(c => c.id === task.category_id);
-                  const isOverdue = task.deadline && new Date(task.deadline).getTime() < new Date("2026-06-10").getTime();
+                {unifiedAgenda.map((item) => {
+                  const category = categories.find(c => c.id === item.category_id);
+                  const isOverdue = item.type === "task" && item.date && new Date(item.date).getTime() < new Date("2026-06-10").getTime();
                   
                   return (
                     <div 
-                      key={task.id}
-                      onClick={(e) => openTaskDetail(task, e)}
+                      key={item.id}
+                      onClick={() => handleItemClick(item)}
                       className="p-3.5 rounded-lg border border-border hover:bg-card/20 transition-colors flex items-start justify-between gap-3 cursor-pointer"
                     >
                       <div className="space-y-1.5">
-                        <p className="text-sm font-semibold text-foreground leading-snug">{task.title}</p>
+                        <p className="text-sm font-semibold text-foreground leading-snug">{item.title}</p>
                         <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-muted-foreground font-semibold">
                           {category && (
                             <span 
@@ -507,25 +605,25 @@ export default function CalendarPage() {
                             </span>
                           )}
                           <span className={isOverdue ? "text-rose-600" : ""}>
-                            Due {task.deadline ? new Date(task.deadline).toLocaleDateString("id-ID", { day: "numeric", month: "short" }) : "No date"}
+                            {item.type === "activity" ? "🕒" : "📅"} {item.timeLabel} ({new Date(item.date).toLocaleDateString("id-ID", { day: "numeric", month: "short" })})
                           </span>
                         </div>
                       </div>
 
                       <span className={`px-1.5 py-0.5 border rounded-full text-[9px] font-semibold uppercase tracking-wider ${
-                        task.priority === "high"
+                        item.type === "task" && item.priority === "high"
                           ? "bg-rose-50 border-rose-100 text-rose-600"
                           : "bg-slate-50 border-slate-100 text-slate-500"
                       }`}>
-                        {task.priority}
+                        {item.type}
                       </span>
                     </div>
                   );
                 })}
 
-                {agendaTasks.length === 0 && (
+                {unifiedAgenda.length === 0 && (
                   <div className="text-center py-8 text-xs text-muted-foreground">
-                    Tidak ada agenda tugas aktif saat ini.
+                    Tidak ada agenda atau kegiatan aktif saat ini.
                   </div>
                 )}
               </div>
@@ -534,7 +632,7 @@ export default function CalendarPage() {
         </>
       )}
 
-      {/* Task Detail Dialog */}
+      {/* Detail Dialog */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent className="sm:max-w-md bg-white border border-border">
           {selectedTask && (
@@ -634,6 +732,89 @@ export default function CalendarPage() {
                   }`}>
                     {selectedTask.status === "done" ? "Completed" : (selectedTask.status === "in_progress" ? "In Progress" : "To Do")}
                   </span>
+                </div>
+              </div>
+
+              <DialogFooter className="pt-2">
+                <Button 
+                  onClick={() => setIsDetailOpen(false)} 
+                  className="text-xs h-8 bg-primary text-white hover:bg-primary/95"
+                >
+                  Close Details
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+
+          {selectedActivity && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-2 mb-1">
+                  {(() => {
+                    const cat = categories.find(c => c.id === selectedActivity.category_id);
+                    return cat ? (
+                      <span 
+                        className="inline-flex items-center text-[10px] font-bold px-2.5 py-0.5 border rounded-full"
+                        style={{ 
+                          backgroundColor: `${cat.color}15`, 
+                          borderColor: `${cat.color}40`, 
+                          color: cat.color 
+                        }}
+                      >
+                        {renderCategoryIcon(cat.icon)}
+                        <span className="ml-1">{cat.name}</span>
+                      </span>
+                    ) : (
+                      <span className="text-[10px] bg-slate-50 border border-slate-200 text-slate-400 px-2.5 py-0.5 rounded-full">
+                        Uncategorized
+                      </span>
+                    );
+                  })()}
+                  
+                  <span className="inline-flex items-center text-[10px] font-semibold px-2.5 py-0.5 border border-indigo-200 bg-indigo-50 text-indigo-700 rounded-full uppercase tracking-wider">
+                    Jadwal Kegiatan
+                  </span>
+                </div>
+                <DialogTitle className="text-base font-bold text-foreground">
+                  {selectedActivity.title}
+                </DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-4 py-2 text-sm text-foreground">
+                {selectedActivity.notes && (
+                  <div className="space-y-1.5 p-3 rounded-lg bg-card/50 border border-border">
+                    <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                      <FileText className="h-3.5 w-3.5" /> Notes
+                    </p>
+                    <p className="text-xs text-foreground whitespace-pre-wrap leading-relaxed">
+                      {selectedActivity.notes}
+                    </p>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-4 border-t border-border pt-3">
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
+                      <CalendarIcon className="h-3 w-3" /> Tanggal
+                    </span>
+                    <p className="text-xs font-bold text-foreground">
+                      {new Date(selectedActivity.date).toLocaleDateString("id-ID", {
+                        weekday: "short",
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric"
+                      })}
+                    </p>
+                  </div>
+
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
+                      <Clock className="h-3 w-3" /> Jam Pelaksanaan
+                    </span>
+                    <p className="text-xs font-bold text-foreground">
+                      {selectedActivity.start_time.substring(0, 5)} {selectedActivity.end_time ? `- ${selectedActivity.end_time.substring(0, 5)}` : ""}
+                    </p>
+                  </div>
                 </div>
               </div>
 

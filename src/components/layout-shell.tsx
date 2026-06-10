@@ -21,7 +21,8 @@ import {
   HelpCircle,
   Trophy,
   User,
-  AlertCircle
+  AlertCircle,
+  Activity
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -116,6 +117,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
   const navItems = [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { label: "Tasks", href: "/tasks", icon: CheckSquare },
+    { label: "Activities", href: "/activities", icon: Activity },
     { label: "Calendar", href: "/calendar", icon: Calendar },
     { label: "Statistics", href: "/statistics", icon: BarChart3 },
   ];

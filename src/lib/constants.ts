@@ -92,3 +92,58 @@ export const DUMMY_TASKS: Task[] = [
     created_at: "2026-06-04T13:00:00Z"
   }
 ];
+
+export interface Activity {
+  id: string;
+  title: string;
+  category_id: string | null;
+  date: string; // YYYY-MM-DD
+  start_time: string; // HH:MM
+  end_time: string | null; // HH:MM
+  notes: string | null;
+  created_at: string;
+}
+
+export const DUMMY_ACTIVITIES: Activity[] = [
+  {
+    id: "a1",
+    title: "Kuliah Basis Data (Ruang 3.2)",
+    category_id: "c1", // Kuliah
+    date: "2026-06-10",
+    start_time: "07:30",
+    end_time: "10:00",
+    notes: "Materi: Pengenalan Query SQL dan Relational Algebra.",
+    created_at: "2026-06-05T08:00:00Z"
+  },
+  {
+    id: "a2",
+    title: "Kuliah Pemrograman Web (Lab Komputer 1)",
+    category_id: "c1", // Kuliah
+    date: "2026-06-10",
+    start_time: "10:15",
+    end_time: "12:45",
+    notes: "Praktikum: Membuat backend API dengan Node.js.",
+    created_at: "2026-06-05T08:00:00Z"
+  },
+  {
+    id: "a3",
+    title: "Bimbingan Kuis Jaringan Komputer",
+    category_id: "c2", // Kuis
+    date: "2026-06-11",
+    start_time: "13:00",
+    end_time: "14:30",
+    notes: "Belajar subnetting dan topology Cisco Packet Tracer.",
+    created_at: "2026-06-06T09:00:00Z"
+  },
+  {
+    id: "a4",
+    title: "Rapat Koordinasi Lomba Inovasi",
+    category_id: "c4", // Lomba
+    date: "2026-06-12",
+    start_time: "16:00",
+    end_time: "17:30",
+    notes: "Membahas konsep aplikasi IoT untuk lomba Pekan Ilmiah.",
+    created_at: "2026-06-07T10:00:00Z"
+  }
+];
+
