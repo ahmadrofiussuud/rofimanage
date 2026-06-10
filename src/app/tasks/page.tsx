@@ -559,35 +559,22 @@ export default function TasksPage() {
                   return (
                     <TableRow 
                       key={task.id} 
-                      className="group border-b border-border hover:bg-card/30 transition-colors duration-150 text-sm align-middle"
+                      onClick={() => handleStartEditTask(task)}
+                      className="group border-b border-border hover:bg-card/30 transition-colors duration-150 text-sm align-middle cursor-pointer"
                     >
-                      {/* Task Name / Title & Checkbox */}
+                      {/* Task Name / Title */}
                       <TableCell className="px-4 py-3.5 align-middle">
-                        <div className="flex items-center gap-2.5">
-                          <div 
-                            onClick={(e) => handleStatusToggle(task, e)}
-                            className={`flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border transition-colors ${
-                              task.status === "done" 
-                                ? "bg-indigo-600 border-indigo-600 text-white" 
-                                : "bg-white hover:border-primary"
-                            }`}
-                          >
-                            {task.status === "done" && (
-                              <span className="text-[10px] font-bold">✓</span>
-                            )}
-                          </div>
-                          <div className="flex flex-col">
-                            <span className={`font-semibold text-foreground ${
-                              task.status === "done" ? "line-through text-muted-foreground font-medium" : ""
-                            }`}>
-                              {task.title}
+                        <div className="flex flex-col">
+                          <span className={`font-semibold text-foreground ${
+                            task.status === "done" ? "line-through text-muted-foreground font-medium" : ""
+                          }`}>
+                            {task.title}
+                          </span>
+                          {task.notes && (
+                            <span className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
+                              {task.notes}
                             </span>
-                            {task.notes && (
-                              <span className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
-                                {task.notes}
-                              </span>
-                            )}
-                          </div>
+                          )}
                         </div>
                       </TableCell>
 
@@ -651,7 +638,7 @@ export default function TasksPage() {
                           </div>
                           
                           <span 
-                            onClick={(e) => handleStatusToggle(task, e)}
+                            onClick={(e) => { e.stopPropagation(); handleStatusToggle(task, e); }}
                             className={`cursor-pointer inline-flex items-center text-[10px] font-bold px-2.5 py-0.5 border rounded-full select-none ${getStatusBadgeStyles(task.status)}`}
                           >
                             {getStatusLabel(task.status)}
@@ -665,7 +652,7 @@ export default function TasksPage() {
                           <Button
                             variant="ghost"
                             size="icon-xs"
-                            onClick={() => handleStartEditTask(task)}
+                            onClick={(e) => { e.stopPropagation(); handleStartEditTask(task); }}
                             className="text-muted-foreground hover:text-indigo-600 hover:bg-indigo-50/50 transition-all rounded-md h-7 w-7"
                           >
                             <Edit2 className="h-3.5 w-3.5" />
@@ -673,7 +660,7 @@ export default function TasksPage() {
                           <Button
                             variant="ghost"
                             size="icon-xs"
-                            onClick={() => handleDeleteTask(task)}
+                            onClick={(e) => { e.stopPropagation(); handleDeleteTask(task); }}
                             className="text-muted-foreground hover:text-rose-600 hover:bg-rose-50/50 transition-all rounded-md h-7 w-7"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -694,22 +681,11 @@ export default function TasksPage() {
               return (
                 <div 
                   key={task.id} 
-                  className="rounded-lg border border-border bg-white p-4 space-y-3.5 hover:bg-card/20 transition-colors"
+                  onClick={() => handleStartEditTask(task)}
+                  className="rounded-lg border border-border bg-white p-4 space-y-3.5 hover:bg-card/20 transition-colors cursor-pointer"
                 >
-                  {/* Top: Checkbox, Name, and Notes */}
+                  {/* Top: Name, and Notes */}
                   <div className="flex items-start gap-2.5">
-                    <div 
-                      onClick={(e) => handleStatusToggle(task, e)}
-                      className={`flex h-5 w-5 shrink-0 mt-0.5 cursor-pointer items-center justify-center rounded-full border border-border transition-colors ${
-                        task.status === "done" 
-                          ? "bg-indigo-600 border-indigo-600 text-white" 
-                          : "bg-white hover:border-primary"
-                      }`}
-                    >
-                      {task.status === "done" && (
-                        <span className="text-[10px] font-bold">✓</span>
-                      )}
-                    </div>
                     <div className="space-y-1">
                       <p className={`text-sm font-semibold text-foreground leading-snug ${
                         task.status === "done" ? "line-through text-muted-foreground font-medium" : ""
@@ -786,7 +762,7 @@ export default function TasksPage() {
                     <div className="flex items-center gap-1 shrink-0">
                       {/* Clickable Status */}
                       <span 
-                        onClick={(e) => handleStatusToggle(task, e)}
+                        onClick={(e) => { e.stopPropagation(); handleStatusToggle(task, e); }}
                         className={`cursor-pointer inline-flex items-center text-[9px] font-bold px-2 py-0.5 border rounded-full select-none ${getStatusBadgeStyles(task.status)}`}
                       >
                         {getStatusLabel(task.status)}
@@ -796,7 +772,7 @@ export default function TasksPage() {
                       <Button
                         variant="ghost"
                         size="icon-xs"
-                        onClick={() => handleStartEditTask(task)}
+                        onClick={(e) => { e.stopPropagation(); handleStartEditTask(task); }}
                         className="text-muted-foreground hover:text-indigo-600 hover:bg-indigo-50 h-7 w-7"
                       >
                         <Edit2 className="h-3.5 w-3.5" />
@@ -806,7 +782,7 @@ export default function TasksPage() {
                       <Button
                         variant="ghost"
                         size="icon-xs"
-                        onClick={() => handleDeleteTask(task)}
+                        onClick={(e) => { e.stopPropagation(); handleDeleteTask(task); }}
                         className="text-muted-foreground hover:text-rose-600 hover:bg-rose-50 h-7 w-7"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
