@@ -80,6 +80,7 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
+  const [isInitialLoaded, setIsInitialLoaded] = useState(false);
 
   // Filters & Sorting states
   const [searchQuery, setSearchQuery] = useState("");
@@ -101,15 +102,18 @@ export default function TasksPage() {
 
   // Load categories and tasks
   async function loadData() {
-    if (!isSupabaseConfigured) {
+    const shouldShowLoading = !isInitialLoaded && tasks.length === 0 && categories.length === 0;
+
+    if (!isSupabaseConfigured || isOfflineMode) {
       setIsOfflineMode(true);
       loadLocalData();
       setLoading(false);
+      setIsInitialLoaded(true);
       return;
     }
 
     try {
-      setLoading(true);
+      if (shouldShowLoading) setLoading(true);
       const { data: catData, error: catError } = await supabase.from("categories").select("*");
       const { data: taskData, error: taskError } = await supabase.from("tasks").select("*");
 
@@ -125,6 +129,7 @@ export default function TasksPage() {
       loadLocalData();
     } finally {
       setLoading(false);
+      setIsInitialLoaded(true);
     }
   }
 
@@ -173,6 +178,9 @@ export default function TasksPage() {
     const nextStatus = statusCycle[task.status] || "todo";
     const nextProgress = nextStatus === "done" ? 100 : (task.status === "done" && nextStatus === "todo" ? 0 : task.progress);
 
+    // Optimistically update the UI tasks state immediately:
+    setTasks(prevTasks => prevTasks.map(t => t.id === task.id ? { ...t, status: nextStatus, progress: nextProgress } : t));
+
     if (isOfflineMode) {
       const updated = tasks.map(t => t.id === task.id ? { ...t, status: nextStatus, progress: nextProgress } : t);
       localStorage.setItem("student_os_tasks", JSON.stringify(updated));
@@ -200,6 +208,8 @@ export default function TasksPage() {
         triggerDatabaseSync();
       } catch (err) {
         console.error("Failed to update status in Supabase:", err);
+        // Rollback state if failed
+        setTasks(prevTasks => prevTasks.map(t => t.id === task.id ? { ...t, status: task.status, progress: task.progress } : t));
         toast({ title: "Gagal memperbarui status", variant: "destructive" });
       }
     }
@@ -545,12 +555,16 @@ export default function TasksPage() {
             <Table>
               <TableHeader className="bg-card">
                 <TableRow className="border-b border-border hover:bg-transparent">
-                  <TableHead className="text-xs font-semibold text-muted-foreground px-4 py-2 w-[40%]">Task Name</TableHead>
+                  <TableHead className="text-xs font-semibold text-muted-foreground px-4 py-2 w-[35%]">Task Name</TableHead>
                   <TableHead className="text-xs font-semibold text-muted-foreground px-4 py-2 w-[15%]">Category</TableHead>
                   <TableHead className="text-xs font-semibold text-muted-foreground px-4 py-2 w-[15%]">Deadline</TableHead>
                   <TableHead className="text-xs font-semibold text-muted-foreground px-4 py-2 w-[12%]">Priority</TableHead>
-                  <TableHead className="text-xs font-semibold text-muted-foreground px-4 py-2 w-[13%]">Progress</TableHead>
-                  <TableHead className="text-xs font-semibold text-muted-foreground px-4 py-2 w-[5%] text-right">Actions</TableHead>
+                  <TableHead className="text-xs font-semibold text-muted-foreground px-4 py-2 w-[15%]">
+                    <div className="text-center w-full">Progress</div>
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold text-muted-foreground px-4 py-2 w-[8%]">
+                    <div className="text-center w-full">Actions</div>
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody className="divide-y divide-border">
@@ -623,10 +637,10 @@ export default function TasksPage() {
                       </TableCell>
 
                       {/* Progress Bar & Status click badge */}
-                      <TableCell className="px-4 py-3.5 align-middle">
-                        <div className="flex items-center gap-3">
-                          <div className="flex-1 min-w-[60px] space-y-1">
-                            <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+                      <TableCell className="px-4 py-3.5 align-middle text-center">
+                        <div className="inline-flex items-center justify-center gap-4 text-center">
+                          <div className="flex flex-col items-center min-w-[70px] space-y-1">
+                            <div className="h-1.5 w-full max-w-[80px] bg-secondary rounded-full overflow-hidden">
                               <div 
                                 className={`h-full rounded-full transition-all duration-300 ${
                                   task.status === "done" ? "bg-indigo-600" : "bg-primary"
@@ -647,8 +661,8 @@ export default function TasksPage() {
                       </TableCell>
 
                       {/* Actions edit & delete */}
-                      <TableCell className="px-4 py-3.5 text-right align-middle">
-                        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <TableCell className="px-4 py-3.5 text-center align-middle">
+                        <div className="flex items-center justify-center gap-1.5">
                           <Button
                             variant="ghost"
                             size="icon-xs"
