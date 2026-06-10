@@ -21,74 +21,74 @@ export interface Task {
 export const DUMMY_TASKS: Task[] = [
   {
     id: "t1",
-    title: "Ujian Akhir Semester Kalkulus II",
+    title: "Ujian Praktik Pemrograman Web: CRUD Next.js",
     category_id: "c3", // Ujian
     deadline: "2026-06-10",
     priority: "high",
     estimated_hours: 4,
     progress: 80,
     status: "in_progress",
-    notes: "Pelajari materi bab 7 sampai 10, terutama integral lipat tiga dan deret tak hingga.",
+    notes: "Buat aplikasi pengelolaan inventaris barang menggunakan Next.js dan localStorage.",
     created_at: "2026-06-05T08:00:00Z"
   },
   {
     id: "t2",
-    title: "Praktikum Basis Data: Desain ERD & Normalisasi",
+    title: "Tugas Normalisasi Database & ERD Bioskop",
     category_id: "c1", // Kuliah
     deadline: "2026-06-11",
     priority: "medium",
     estimated_hours: 3,
     progress: 30,
     status: "in_progress",
-    notes: "Buat rancangan database bioskop online dan normalisasikan ke bentuk 3NF.",
+    notes: "Normalisasikan tabel transaksi penjualan bioskop ke bentuk 3NF dan buat ERD lengkap.",
     created_at: "2026-06-06T09:30:00Z"
   },
   {
     id: "t3",
-    title: "Tugas Mandiri Fisika: Termodinamika",
+    title: "Tugas Subnetting IP Address & Routing VLSM",
     category_id: "c1", // Kuliah
     deadline: "2026-06-12",
     priority: "medium",
     estimated_hours: 2,
     progress: 0,
     status: "todo",
-    notes: "Kerjakan soal nomor 1-5 di buku paket Fisika Dasar halaman 142.",
+    notes: "Kerjakan soal perhitungan VLSM kelas C di buku modul halaman 89.",
     created_at: "2026-06-07T14:00:00Z"
   },
   {
     id: "t4",
-    title: "Laporan Praktikum Fisika: Viskositas Zat Cair",
+    title: "Laporan Integrasi Web Service (REST API)",
     category_id: "c1", // Kuliah
     deadline: "2026-06-15",
     priority: "medium",
     estimated_hours: 5,
     progress: 10,
     status: "todo",
-    notes: "Format sesuai dengan template modul praktikum, lampirkan grafik analisis data.",
+    notes: "Buat dokumentasi integrasi REST API cuaca dengan output format JSON beserta analisis data.",
     created_at: "2026-06-08T10:00:00Z"
   },
   {
     id: "t5",
-    title: "Pendaftaran & Pengumpulan Proposal Lomba Essay Nasional",
-    category_id: "c4", // Lomba
+    title: "Analisis Studi Kasus Teori Perkembangan Jean Piaget",
+    category_id: "c1", // Kuliah
     deadline: "2026-06-18",
     priority: "low",
     estimated_hours: 6,
     progress: 0,
     status: "todo",
-    notes: "Tema: Inovasi teknologi ramah lingkungan berbasis kearifan lokal.",
+    notes: "Amati perilaku belajar kognitif anak usia 7-11 tahun di lingkungan sekolah dasar sekitar.",
     created_at: "2026-06-09T11:00:00Z"
   },
   {
     id: "t6",
-    title: "Praktikum Kimia Dasar: Asam Basa",
+    title: "Resume Aliran Filsafat Idealisme & Realisme",
     category_id: "c1", // Kuliah
     deadline: "2026-06-08",
     priority: "low",
     estimated_hours: 2,
     progress: 100,
     status: "done",
-    notes: "Laporan praktikum mandiri pengenalan larutan asam basa. Sudah dikumpulkan di LMS.",
+    notes: "Tugas resume filsafat 2 halaman PDF. Sudah diunggah ke LMS.",
     created_at: "2026-06-04T13:00:00Z"
   }
 ];
