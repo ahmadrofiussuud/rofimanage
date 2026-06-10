@@ -812,7 +812,7 @@ export default function TasksPage() {
                 id="edit-title"
                 type="text"
                 placeholder="Misal: Ujian Kalkulus II"
-                className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="w-full rounded-md border border-input bg-white text-foreground px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
                 required
@@ -823,16 +823,14 @@ export default function TasksPage() {
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Kategori</label>
                 <Select value={editCategory} onValueChange={(val) => setEditCategory(val || "none")}>
-                  <SelectTrigger className="w-full text-sm">
+                  <SelectTrigger className="w-full bg-white border-border text-foreground text-sm">
                     <SelectValue placeholder="Pilih Kategori" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border border-border">
                     <SelectItem value="none">Tanpa Kategori</SelectItem>
                     {categories.map((cat) => (
                       <SelectItem key={cat.id} value={cat.id}>
-                        <span className="flex items-center gap-1.5">
-                          {renderCategoryIcon(cat.icon)} {cat.name}
-                        </span>
+                        {cat.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -844,7 +842,7 @@ export default function TasksPage() {
                 <input
                   id="edit-deadline"
                   type="date"
-                  className="w-full rounded-md border border-input bg-transparent px-3 py-1.5 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="w-full rounded-md border border-input bg-white text-foreground px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   value={editDeadline}
                   onChange={(e) => setEditDeadline(e.target.value)}
                 />
@@ -855,10 +853,10 @@ export default function TasksPage() {
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Prioritas</label>
                 <Select value={editPriority} onValueChange={(val) => { if (val) setEditPriority(val as "low" | "medium" | "high"); }}>
-                  <SelectTrigger className="w-full text-sm">
+                  <SelectTrigger className="w-full bg-white border-border text-foreground text-sm">
                     <SelectValue placeholder="Prioritas" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border border-border">
                     <SelectItem value="low">Rendah (Low)</SelectItem>
                     <SelectItem value="medium">Sedang (Medium)</SelectItem>
                     <SelectItem value="high">Tinggi (High)</SelectItem>
@@ -873,7 +871,7 @@ export default function TasksPage() {
                   type="number"
                   min="0"
                   step="0.5"
-                  className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="w-full rounded-md border border-input bg-white text-foreground px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   value={editHours}
                   onChange={(e) => setEditHours(e.target.value)}
                 />
@@ -884,10 +882,10 @@ export default function TasksPage() {
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</label>
                 <Select value={editStatus} onValueChange={(val) => { if (val) setEditStatus(val as "todo" | "in_progress" | "done"); }}>
-                  <SelectTrigger className="w-full text-sm">
+                  <SelectTrigger className="w-full bg-white border-border text-foreground text-sm">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border border-border">
                     <SelectItem value="todo">Belum Dimulai</SelectItem>
                     <SelectItem value="in_progress">Sedang Dikerjakan</SelectItem>
                     <SelectItem value="done">Selesai</SelectItem>
@@ -922,7 +920,7 @@ export default function TasksPage() {
               <textarea
                 id="edit-notes"
                 placeholder="Tambahkan detail, link materi, atau catatan penting lainnya..."
-                className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-h-[70px] resize-none"
+                className="w-full rounded-md border border-input bg-white text-foreground px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-h-[70px] resize-none"
                 value={editNotes}
                 onChange={(e) => setEditNotes(e.target.value)}
               />
