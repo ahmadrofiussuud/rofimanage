@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "StudentOS",
+  title: "RofiManage",
   description: "Your academic command center",
 };
 

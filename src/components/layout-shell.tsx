@@ -394,7 +394,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
             <GraduationCap className="h-5 w-5" />
           </div>
           <div className="flex flex-col leading-none">
-            <span className="font-semibold text-sm text-foreground">StudentOS Space</span>
+            <span className="font-semibold text-sm text-foreground">RofiManage Space</span>
             <span className="text-[10px] text-muted-foreground mt-0.5 font-medium">Academic Term 1</span>
           </div>
         </div>
@@ -503,7 +503,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
             </Button>
             
             <div className="flex items-baseline gap-2">
-              <span className="font-bold text-lg text-foreground tracking-tight">StudentOS</span>
+              <span className="font-bold text-lg text-foreground tracking-tight">RofiManage</span>
               <span className="hidden md:inline-block h-3.5 w-px bg-border align-middle" />
               <span className="hidden md:inline-block text-xs text-muted-foreground font-medium">
                 Your academic command center
