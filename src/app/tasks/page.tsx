@@ -872,7 +872,7 @@ export default function TasksPage() {
                 <input
                   id="edit-deadline"
                   type="date"
-                  className="w-full min-w-0 rounded-md border border-input bg-white text-foreground px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="w-full max-w-full min-w-0 rounded-md border border-input bg-white text-foreground px-2 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   value={editDeadline}
                   onChange={(e) => setEditDeadline(e.target.value)}
                 />

@@ -722,7 +722,7 @@ export default function ActivitiesPage() {
                   id="act-date"
                   type="date"
                   required
-                  className="w-full min-w-0 rounded-md border border-input bg-white text-foreground px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="w-full max-w-full min-w-0 rounded-md border border-input bg-white text-foreground px-2 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   value={formDate}
                   onChange={(e) => setFormDate(e.target.value)}
                 />
@@ -737,7 +737,7 @@ export default function ActivitiesPage() {
                   id="act-start-time"
                   type="time"
                   required
-                  className="w-full min-w-0 rounded-md border border-input bg-white text-foreground px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="w-full max-w-full min-w-0 rounded-md border border-input bg-white text-foreground px-2 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   value={formStartTime}
                   onChange={(e) => setFormStartTime(e.target.value)}
                 />
@@ -748,7 +748,7 @@ export default function ActivitiesPage() {
                 <input
                   id="act-end-time"
                   type="time"
-                  className="w-full min-w-0 rounded-md border border-input bg-white text-foreground px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="w-full max-w-full min-w-0 rounded-md border border-input bg-white text-foreground px-2 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   value={formEndTime}
                   onChange={(e) => setFormEndTime(e.target.value)}
                 />

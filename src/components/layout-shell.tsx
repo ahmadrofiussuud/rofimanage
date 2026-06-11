@@ -607,7 +607,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
                   type="date"
                   value={taskDeadline}
                   onChange={(e) => setTaskDeadline(e.target.value)}
-                  className="w-full min-w-0 px-3 py-1.5 border border-border rounded-lg bg-white text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-foreground"
+                  className="w-full max-w-full min-w-0 px-2 py-1.5 border border-border rounded-lg bg-white text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-foreground"
                 />
               </div>
             </div>
