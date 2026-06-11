@@ -52,12 +52,29 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   
+  // Date states
+  const [todayDate, setTodayDate] = useState<Date | null>(null);
+  const [currentDateString, setCurrentDateString] = useState("");
+
   // AI states
   const [aiRecommendation, setAiRecommendation] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
 
   // Load categories and tasks
   useEffect(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    setTodayDate(d);
+
+    setCurrentDateString(
+      new Date().toLocaleDateString("en-GB", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      })
+    );
+
     async function loadData() {
       if (!isSupabaseConfigured) {
         setIsOfflineMode(true);
@@ -116,7 +133,7 @@ export default function DashboardPage() {
   const getRelativeDeadline = (deadlineStr: string | null) => {
     if (!deadlineStr) return { text: "No deadline", colorClass: "text-slate-400 bg-slate-50 border-slate-200" };
     
-    const today = new Date("2026-06-10"); // Simulated "today" June 10, 2026
+    const today = todayDate || new Date();
     const deadlineDate = new Date(deadlineStr);
     
     const diffTime = deadlineDate.getTime() - today.getTime();
@@ -144,10 +161,11 @@ export default function DashboardPage() {
   const activeTasks = tasks.filter(t => t.status !== "done");
   const completedTasks = tasks.filter(t => t.status === "done");
   
-  // Due this week: deadline between June 10, 2026 and June 17, 2026
+  // Due this week: deadline between today and today + 7 days
   const dueThisWeek = activeTasks.filter(t => {
     if (!t.deadline) return false;
-    const diffDays = Math.ceil((new Date(t.deadline).getTime() - new Date("2026-06-10").getTime()) / (1000 * 60 * 60 * 24));
+    const today = todayDate || new Date();
+    const diffDays = Math.ceil((new Date(t.deadline).getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     return diffDays >= 0 && diffDays <= 7;
   });
 
@@ -267,7 +285,7 @@ export default function DashboardPage() {
           {getGreeting()}, Rofi 👋
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Wednesday, 10 June 2026
+          {currentDateString || "Loading date..."}
         </p>
       </div>
 

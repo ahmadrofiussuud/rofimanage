@@ -579,20 +579,24 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-foreground">Category</label>
                 <Select value={taskCategory} onOpenChange={loadData} onValueChange={(val) => setTaskCategory(val || "none")}>
                   <SelectTrigger className="w-full bg-white border-border text-foreground">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border border-border">
-                    <SelectItem value="none">Uncategorized</SelectItem>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
+                    <SelectValue placeholder="Select category">
+                        {taskCategory === "none"
+                          ? "Uncategorized"
+                          : (categories.find(c => c.id === taskCategory)?.name || taskCategory)}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border border-border">
+                      <SelectItem value="none">Uncategorized</SelectItem>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -608,47 +612,51 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-foreground">Priority</label>
-                <Select value={taskPriority} onValueChange={(val) => { if (val) setTaskPriority(val); }}>
-                  <SelectTrigger className="w-full bg-white border-border text-foreground">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border border-border">
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                  <label className="text-xs font-semibold text-foreground">Priority</label>
+                  <Select value={taskPriority} onValueChange={(val) => { if (val) setTaskPriority(val as "low" | "medium" | "high"); }}>
+                    <SelectTrigger className="w-full bg-white border-border text-foreground">
+                      <SelectValue>
+                        {taskPriority.charAt(0).toUpperCase() + taskPriority.slice(1)}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border border-border">
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-foreground">Est. Hours</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.5"
-                  value={taskHours}
-                  onChange={(e) => setTaskHours(e.target.value)}
-                  className="w-full px-3 py-1.5 border border-border rounded-lg bg-white text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-foreground"
-                />
-              </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-foreground">Est. Hours</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    value={taskHours}
+                    onChange={(e) => setTaskHours(e.target.value)}
+                    className="w-full px-3 py-1.5 border border-border rounded-lg bg-white text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-foreground"
+                  />
+                </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-foreground">Status</label>
-                <Select value={taskStatus} onValueChange={(val) => { if (val) setTaskStatus(val); }}>
-                  <SelectTrigger className="w-full bg-white border-border text-foreground">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border border-border">
-                    <SelectItem value="todo">To Do</SelectItem>
-                    <SelectItem value="in_progress">In Progress</SelectItem>
-                    <SelectItem value="done">Done</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-foreground">Status</label>
+                  <Select value={taskStatus} onValueChange={(val) => { if (val) setTaskStatus(val as "todo" | "in_progress" | "done"); }}>
+                    <SelectTrigger className="w-full bg-white border-border text-foreground">
+                      <SelectValue>
+                        {taskStatus === "done" ? "Done" : taskStatus === "in_progress" ? "In Progress" : "To Do"}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border border-border">
+                      <SelectItem value="todo">To Do</SelectItem>
+                      <SelectItem value="in_progress">In Progress</SelectItem>
+                      <SelectItem value="done">Done</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-            </div>
 
             <div className="space-y-1.5">
               <div className="flex justify-between items-center text-xs">

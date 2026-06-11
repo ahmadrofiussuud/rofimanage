@@ -32,7 +32,9 @@ export async function POST(req: Request) {
       const highPriority = activeTasks.filter(t => t.priority === "high");
       const urgentSoon = activeTasks.filter(t => {
         if (!t.deadline) return false;
-        const diffDays = Math.ceil((new Date(t.deadline).getTime() - new Date("2026-06-10").getTime()) / (1000 * 60 * 60 * 24));
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const diffDays = Math.ceil((new Date(t.deadline).getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
         return diffDays >= 0 && diffDays <= 2;
       });
 

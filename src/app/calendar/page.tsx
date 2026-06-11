@@ -65,6 +65,10 @@ export default function CalendarPage() {
   
   // Navigation states
   const [currentDate, setCurrentDate] = useState<Date>(new Date(2026, 5, 10)); // Simulated June 10, 2026
+
+  useEffect(() => {
+    setCurrentDate(new Date());
+  }, []);
   const [viewMode, setViewMode] = useState<"month" | "week">("month");
   
   // Detail Dialog states
@@ -213,12 +217,13 @@ export default function CalendarPage() {
     return cells;
   };
 
-  // Check if date is today (June 10, 2026)
+  // Check if date is today
   const isToday = (date: Date) => {
+    const today = new Date();
     return (
-      date.getDate() === 10 &&
-      date.getMonth() === 5 &&
-      date.getFullYear() === 2026
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
     );
   };
 
@@ -244,7 +249,7 @@ export default function CalendarPage() {
   };
 
   const handleGoToday = () => {
-    setCurrentDate(new Date(2026, 5, 10));
+    setCurrentDate(new Date());
   };
 
   // Fetch tasks matching specific date string (YYYY-MM-DD)
@@ -581,7 +586,9 @@ export default function CalendarPage() {
               <div className="space-y-3">
                 {unifiedAgenda.map((item) => {
                   const category = categories.find(c => c.id === item.category_id);
-                  const isOverdue = item.type === "task" && item.date && new Date(item.date).getTime() < new Date("2026-06-10").getTime();
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const isOverdue = item.type === "task" && item.date && new Date(item.date).getTime() < today.getTime();
                   
                   return (
                     <div 

@@ -440,7 +440,11 @@ export default function TasksPage() {
           {/* Category Filter */}
           <Select value={filterCategory} onValueChange={(val) => setFilterCategory(val || "all")}>
             <SelectTrigger className="bg-white border-border text-foreground text-xs py-1.5 h-8 w-[145px]">
-              <SelectValue placeholder="Category" />
+              <SelectValue placeholder="Category">
+                {filterCategory === "all" 
+                  ? "All Categories" 
+                  : (categories.find(c => c.id === filterCategory)?.name || filterCategory)}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent className="bg-white border border-border">
               <SelectItem value="all">All Categories</SelectItem>
@@ -455,7 +459,11 @@ export default function TasksPage() {
           {/* Status Filter */}
           <Select value={filterStatus} onValueChange={(val) => setFilterStatus(val || "all")}>
             <SelectTrigger className="bg-white border-border text-foreground text-xs py-1.5 h-8 w-[120px]">
-              <SelectValue placeholder="Status" />
+              <SelectValue placeholder="Status">
+                {filterStatus === "all" 
+                  ? "All Statuses" 
+                  : getStatusLabel(filterStatus as "todo" | "in_progress" | "done")}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent className="bg-white border border-border">
               <SelectItem value="all">All Statuses</SelectItem>
@@ -468,7 +476,11 @@ export default function TasksPage() {
           {/* Priority Filter */}
           <Select value={filterPriority} onValueChange={(val) => setFilterPriority(val || "all")}>
             <SelectTrigger className="bg-white border-border text-foreground text-xs py-1.5 h-8 w-[120px]">
-              <SelectValue placeholder="Priority" />
+              <SelectValue placeholder="Priority">
+                {filterPriority === "all" 
+                  ? "All Priorities" 
+                  : filterPriority.charAt(0).toUpperCase() + filterPriority.slice(1)}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent className="bg-white border border-border">
               <SelectItem value="all">All Priorities</SelectItem>
@@ -833,12 +845,16 @@ export default function TasksPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Kategori</label>
                 <Select value={editCategory} onValueChange={(val) => setEditCategory(val || "none")}>
                   <SelectTrigger className="w-full bg-white border-border text-foreground text-sm">
-                    <SelectValue placeholder="Pilih Kategori" />
+                    <SelectValue placeholder="Pilih Kategori">
+                      {editCategory === "none"
+                        ? "Tanpa Kategori"
+                        : (categories.find(c => c.id === editCategory)?.name || editCategory)}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent className="bg-white border border-border">
                     <SelectItem value="none">Tanpa Kategori</SelectItem>
@@ -863,12 +879,14 @@ export default function TasksPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Prioritas</label>
                 <Select value={editPriority} onValueChange={(val) => { if (val) setEditPriority(val as "low" | "medium" | "high"); }}>
                   <SelectTrigger className="w-full bg-white border-border text-foreground text-sm">
-                    <SelectValue placeholder="Prioritas" />
+                    <SelectValue placeholder="Prioritas">
+                      {editPriority === "high" ? "Tinggi (High)" : editPriority === "medium" ? "Sedang (Medium)" : "Rendah (Low)"}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent className="bg-white border border-border">
                     <SelectItem value="low">Rendah (Low)</SelectItem>
@@ -892,12 +910,14 @@ export default function TasksPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</label>
                 <Select value={editStatus} onValueChange={(val) => { if (val) setEditStatus(val as "todo" | "in_progress" | "done"); }}>
                   <SelectTrigger className="w-full bg-white border-border text-foreground text-sm">
-                    <SelectValue placeholder="Status" />
+                    <SelectValue placeholder="Status">
+                      {editStatus === "done" ? "Selesai" : editStatus === "in_progress" ? "Sedang Dikerjakan" : "Belum Dimulai"}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent className="bg-white border border-border">
                     <SelectItem value="todo">Belum Dimulai</SelectItem>

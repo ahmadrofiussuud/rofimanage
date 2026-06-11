@@ -156,8 +156,12 @@ export default function ActivitiesPage() {
     setFormTitle("");
     setFormCategory("none");
     
-    // Default to today's date in simulated format (2026-06-10)
-    setFormDate("2026-06-10");
+    // Default to today's date dynamically (YYYY-MM-DD)
+    const localToday = new Date();
+    const offset = localToday.getTimezoneOffset();
+    const adjustedDate = new Date(localToday.getTime() - (offset * 60 * 1000));
+    const todayStr = adjustedDate.toISOString().split("T")[0];
+    setFormDate(todayStr);
     setFormStartTime("08:00");
     setFormEndTime("09:00");
     setFormNotes("");
@@ -382,7 +386,11 @@ export default function ActivitiesPage() {
           {/* Category Filter */}
           <Select value={filterCategory} onValueChange={(val) => setFilterCategory(val || "all")}>
             <SelectTrigger className="bg-white border-border text-foreground text-xs py-1.5 h-8 w-[145px]">
-              <SelectValue placeholder="Category" />
+              <SelectValue placeholder="Category">
+                {filterCategory === "all" 
+                  ? "All Categories" 
+                  : (categories.find(c => c.id === filterCategory)?.name || filterCategory)}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent className="bg-white border border-border">
               <SelectItem value="all">All Categories</SelectItem>
@@ -686,12 +694,16 @@ export default function ActivitiesPage() {
             </div>
 
             {/* Category & Date */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Kategori</label>
                 <Select value={formCategory} onValueChange={(val) => setFormCategory(val || "none")}>
                   <SelectTrigger className="w-full bg-white border-border text-foreground text-sm">
-                    <SelectValue placeholder="Pilih Kategori" />
+                    <SelectValue placeholder="Pilih Kategori">
+                      {formCategory === "none"
+                        ? "Tanpa Kategori"
+                        : (categories.find((c) => c.id === formCategory)?.name || formCategory)}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent className="bg-white border border-border">
                     <SelectItem value="none">Tanpa Kategori</SelectItem>
@@ -718,7 +730,7 @@ export default function ActivitiesPage() {
             </div>
 
             {/* Time Blocks */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label htmlFor="act-start-time" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Jam Mulai</label>
                 <input
