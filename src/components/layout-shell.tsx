@@ -579,8 +579,8 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1 min-w-0">
                 <label className="text-xs font-semibold text-foreground">Category</label>
                 <Select value={taskCategory} onOpenChange={loadData} onValueChange={(val) => setTaskCategory(val || "none")}>
                   <SelectTrigger className="w-full bg-white border-border text-foreground">
@@ -601,19 +601,19 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
                 </Select>
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1 min-w-0">
                 <label className="text-xs font-semibold text-foreground">Deadline</label>
                 <input
                   type="date"
                   value={taskDeadline}
                   onChange={(e) => setTaskDeadline(e.target.value)}
-                  className="w-full px-3 py-1.5 border border-border rounded-lg bg-white text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-foreground"
+                  className="w-full min-w-0 px-3 py-1.5 border border-border rounded-lg bg-white text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-foreground"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="space-y-1">
+            <div className="grid grid-cols-3 gap-3">
+              <div className="space-y-1 min-w-0">
                   <label className="text-xs font-semibold text-foreground">Priority</label>
                   <Select value={taskPriority} onValueChange={(val) => { if (val) setTaskPriority(val as "low" | "medium" | "high"); }}>
                     <SelectTrigger className="w-full bg-white border-border text-foreground">
@@ -629,7 +629,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
                   </Select>
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-1 min-w-0">
                   <label className="text-xs font-semibold text-foreground">Est. Hours</label>
                   <input
                     type="number"
@@ -637,11 +637,11 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
                     step="0.5"
                     value={taskHours}
                     onChange={(e) => setTaskHours(e.target.value)}
-                    className="w-full px-3 py-1.5 border border-border rounded-lg bg-white text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-foreground"
+                    className="w-full min-w-0 px-3 py-1.5 border border-border rounded-lg bg-white text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-foreground"
                   />
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-1 min-w-0">
                   <label className="text-xs font-semibold text-foreground">Status</label>
                   <Select value={taskStatus} onValueChange={(val) => { if (val) setTaskStatus(val as "todo" | "in_progress" | "done"); }}>
                     <SelectTrigger className="w-full bg-white border-border text-foreground">

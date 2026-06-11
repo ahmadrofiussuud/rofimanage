@@ -694,8 +694,8 @@ export default function ActivitiesPage() {
             </div>
 
             {/* Category & Date */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2 min-w-0">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Kategori</label>
                 <Select value={formCategory} onValueChange={(val) => setFormCategory(val || "none")}>
                   <SelectTrigger className="w-full bg-white border-border text-foreground text-sm">
@@ -716,13 +716,13 @@ export default function ActivitiesPage() {
                 </Select>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 min-w-0">
                 <label htmlFor="act-date" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tanggal</label>
                 <input
                   id="act-date"
                   type="date"
                   required
-                  className="w-full rounded-md border border-input bg-white text-foreground px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="w-full min-w-0 rounded-md border border-input bg-white text-foreground px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   value={formDate}
                   onChange={(e) => setFormDate(e.target.value)}
                 />
@@ -730,25 +730,25 @@ export default function ActivitiesPage() {
             </div>
 
             {/* Time Blocks */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2 min-w-0">
                 <label htmlFor="act-start-time" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Jam Mulai</label>
                 <input
                   id="act-start-time"
                   type="time"
                   required
-                  className="w-full rounded-md border border-input bg-white text-foreground px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="w-full min-w-0 rounded-md border border-input bg-white text-foreground px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   value={formStartTime}
                   onChange={(e) => setFormStartTime(e.target.value)}
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 min-w-0">
                 <label htmlFor="act-end-time" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Jam Selesai (Opsional)</label>
                 <input
                   id="act-end-time"
                   type="time"
-                  className="w-full rounded-md border border-input bg-white text-foreground px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="w-full min-w-0 rounded-md border border-input bg-white text-foreground px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   value={formEndTime}
                   onChange={(e) => setFormEndTime(e.target.value)}
                 />
