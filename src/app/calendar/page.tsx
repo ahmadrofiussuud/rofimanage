@@ -254,7 +254,7 @@ export default function CalendarPage() {
 
   // Fetch tasks matching specific date string (YYYY-MM-DD)
   const getTasksForDate = (dateStr: string) => {
-    return tasks.filter((t) => t.deadline === dateStr);
+    return tasks.filter((t) => t.deadline && t.deadline.startsWith(dateStr));
   };
 
   // Fetch activities matching specific date string (YYYY-MM-DD)
@@ -314,7 +314,16 @@ export default function CalendarPage() {
         type: "task" as const,
         title: t.title,
         date: t.deadline!,
-        timeLabel: "Due",
+        timeLabel: (() => {
+          const d = new Date(t.deadline!);
+          const hasTime = t.deadline!.includes("T") || t.deadline!.includes(":") || t.deadline!.includes(" ");
+          if (hasTime && !isNaN(d.getTime())) {
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            return `Due ${hours}:${minutes}`;
+          }
+          return "Due";
+        })(),
         priority: t.priority,
         category_id: t.category_id,
         notes: t.notes,
@@ -694,12 +703,26 @@ export default function CalendarPage() {
                       <CalendarIcon className="h-3 w-3" /> Deadline
                     </span>
                     <p className="text-xs font-bold text-foreground">
-                      {selectedTask.deadline ? new Date(selectedTask.deadline).toLocaleDateString("en-US", {
-                        weekday: "short",
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric"
-                      }) : "No deadline"}
+                      {(() => {
+                        if (!selectedTask.deadline) return "No deadline";
+                        const d = new Date(selectedTask.deadline);
+                        if (isNaN(d.getTime())) return "No deadline";
+                        
+                        const dateFormatted = d.toLocaleDateString("en-US", {
+                          weekday: "short",
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric"
+                        });
+                        
+                        const hasTime = selectedTask.deadline.includes("T") || selectedTask.deadline.includes(":") || selectedTask.deadline.includes(" ");
+                        if (hasTime) {
+                          const hours = String(d.getHours()).padStart(2, '0');
+                          const minutes = String(d.getMinutes()).padStart(2, '0');
+                          return `${dateFormatted}, ${hours}:${minutes}`;
+                        }
+                        return dateFormatted;
+                      })()}
                     </p>
                   </div>
 

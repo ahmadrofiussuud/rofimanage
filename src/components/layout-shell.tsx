@@ -604,7 +604,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
               <div className="space-y-1 min-w-0">
                 <label className="text-xs font-semibold text-foreground">Deadline</label>
                 <input
-                  type="date"
+                  type="datetime-local"
                   value={taskDeadline}
                   onChange={(e) => setTaskDeadline(e.target.value)}
                   className="w-full max-w-full min-w-0 px-2 py-1.5 border border-border rounded-lg bg-white text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-foreground"

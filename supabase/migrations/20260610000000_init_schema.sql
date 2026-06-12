@@ -16,7 +16,7 @@ CREATE TABLE tasks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
   category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
-  deadline DATE,
+  deadline TIMESTAMP WITH TIME ZONE,
   priority task_priority DEFAULT 'medium' NOT NULL,
   estimated_hours NUMERIC DEFAULT 0,
   progress INTEGER DEFAULT 0 CHECK (progress >= 0 AND progress <= 100) NOT NULL,

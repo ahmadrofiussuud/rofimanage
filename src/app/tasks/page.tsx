@@ -75,6 +75,62 @@ const DEFAULT_CATEGORIES: Category[] = [
   { id: "c5", name: "Pribadi", color: "#8B5CF6", icon: "User" }
 ];
 
+const formatToDatetimeLocal = (dateStr: string | null) => {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return "";
+  
+  const pad = (num: number) => String(num).padStart(2, '0');
+  const year = d.getFullYear();
+  const month = pad(d.getMonth() + 1);
+  const day = pad(d.getDate());
+  const hours = pad(d.getHours());
+  const minutes = pad(d.getMinutes());
+  
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
+const formatDeadlineDisplay = (dateStr: string | null) => {
+  if (!dateStr) return "-";
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return "-";
+  
+  const dateFormatted = d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  
+  const hasTime = dateStr.includes("T") || dateStr.includes(":") || dateStr.includes(" ");
+  if (hasTime) {
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${dateFormatted}, ${hours}:${minutes}`;
+  }
+  
+  return dateFormatted;
+};
+
+const formatDeadlineDisplayMobile = (dateStr: string | null) => {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return "";
+  
+  const dateFormatted = d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+  
+  const hasTime = dateStr.includes("T") || dateStr.includes(":") || dateStr.includes(" ");
+  if (hasTime) {
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${dateFormatted}, ${hours}:${minutes}`;
+  }
+  
+  return dateFormatted;
+};
+
 export default function TasksPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -254,7 +310,7 @@ export default function TasksPage() {
     setEditingTask(task);
     setEditTitle(task.title);
     setEditCategory(task.category_id || "none");
-    setEditDeadline(task.deadline || "");
+    setEditDeadline(formatToDatetimeLocal(task.deadline));
     setEditPriority(task.priority);
     setEditHours(task.estimated_hours.toString());
     setEditProgress(task.progress);
@@ -630,11 +686,7 @@ export default function TasksPage() {
                         {task.deadline ? (
                           <span className="flex items-center gap-1">
                             <CalendarIcon className="h-3.5 w-3.5 shrink-0" />
-                            {new Date(task.deadline).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            })}
+                            {formatDeadlineDisplay(task.deadline)}
                           </span>
                         ) : (
                           <span className="text-slate-300">-</span>
@@ -754,10 +806,7 @@ export default function TasksPage() {
                     {task.deadline && (
                       <span className="inline-flex items-center text-[9px] font-semibold px-2 py-0.5 border border-border bg-card/40 text-muted-foreground rounded-full gap-1">
                         <CalendarIcon className="h-2.5 w-2.5 shrink-0" />
-                        {new Date(task.deadline).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })}
+                        {formatDeadlineDisplayMobile(task.deadline)}
                       </span>
                     )}
 
@@ -871,7 +920,7 @@ export default function TasksPage() {
                 <label htmlFor="edit-deadline" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tenggat Waktu (Deadline)</label>
                 <input
                   id="edit-deadline"
-                  type="date"
+                  type="datetime-local"
                   className="w-full max-w-full min-w-0 rounded-md border border-input bg-white text-foreground px-2 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   value={editDeadline}
                   onChange={(e) => setEditDeadline(e.target.value)}
